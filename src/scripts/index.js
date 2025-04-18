@@ -16,6 +16,8 @@ addCardModal.classList.add('popup_is-animated');
 const addCardForm = addCardModal.querySelector('.popup__form');
 const viewCard = content.querySelector('.popup_type_image');
 viewCard.classList.add('popup_is-animated');
+const viewCardTitle = viewCard.querySelector('.popup__caption');
+const viewCardImage = viewCard.querySelector('.popup__image');
 const addCardFormNameField = addCardForm.querySelector('.popup__input_type_card-name');
 const addCardFormUrlField = addCardForm.querySelector('.popup__input_type_url');
 const cardsList = content.querySelector('.places__list');
@@ -45,10 +47,17 @@ const handleEditProfileSubmitEvent = (evt) => {
 
 const handleAddCardSubmitEvent = (evt) => {
   evt.preventDefault();
-  const newCardElem = card.createCard({name: addCardFormNameField.value, link: addCardFormUrlField.value}, viewCard);
+  const newCardElem = card.createCard({name: addCardFormNameField.value, link: addCardFormUrlField.value}, card.removeCard, card.likeCard, openCard);
   cardsList.prepend(newCardElem);
   evt.target.reset();
   modal.closeModal(addCardModal);
+};
+
+const openCard = function(cardElement) {
+  viewCardTitle.textContent = cardElement.querySelector('.card__title').textContent;
+  viewCardImage.src = cardElement.querySelector('.card__image').src;
+  viewCard.alt = cardElement.alt;
+  modal.openModal(viewCard);
 };
 
 addPopupEventListeners(editModal);
@@ -60,7 +69,7 @@ addCardForm.addEventListener('submit', handleAddCardSubmitEvent);
 // @todo: Вывести карточки на страницу
 const showCards = function(cards) {
   cards.forEach((cardElem) =>
-    cardsList.appendChild(card.createCard(cardElem, viewCard))
+    cardsList.appendChild(card.createCard(cardElem, card.removeCard, card.likeCard, openCard))
   );
 };
 
