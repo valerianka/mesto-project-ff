@@ -1,15 +1,21 @@
-const overlayClickEventHandler = function(evt, elem) {
-  if (evt.target === elem) {
+const handleOverlayClickEvent = function(evt, elem) {
+  if (elem && evt.target === elem) {
     closeModal(elem);
   }
 };
 
 const openModal = function(elem) {
-  elem.classList.add('popup_is-opened');
+  if (elem) {
+    elem.classList.add('popup_is-opened');
+    document.addEventListener('keydown', handleEscKeyDown);
+  }
 };
 
 const closeModal = function(elem) {
-  elem.classList.remove('popup_is-opened');
+  if (elem) {
+    elem.classList.remove('popup_is-opened');
+    document.removeEventListener('keydown', handleEscKeyDown);
+  }
 };
 
 const handleEscKeyDown = (evt) => {
@@ -19,4 +25,4 @@ const handleEscKeyDown = (evt) => {
   }
 }; 
 
-export {openModal, closeModal, handleEscKeyDown, overlayClickEventHandler};
+export {openModal, closeModal, handleOverlayClickEvent};
