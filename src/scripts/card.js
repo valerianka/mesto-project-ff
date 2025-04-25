@@ -10,7 +10,6 @@ const likeCard = function (cardElement, cardId) {
       .classList.contains("card__like-button_is-active")
   ) {
     decrementLikes(cardId).then((result) => {
-      console.log(result);
       cardLikesCountField.textContent =
         result.likes.length > 0 ? result.likes.length : "";
     });
@@ -66,17 +65,16 @@ function createCard(card, removeCard, likeCard, openCard, userId) {
 }
 
 const removeCard = function (cardElement, cardId) {
-  cardElement.remove();
-  deleteCard(cardId);
+  deleteCard(cardId).then(result => {
+    if (result) {
+      cardElement.remove();
+    } else {
+      throw new Error("Error deleting the card");
+    }
+  })
+  .catch(err => {
+    console.log("Error deleting the card: ", err);
+  });
 };
 
-const openCard = function (evt, cardElement, cardPopup) {
-  cardPopup.querySelector(".popup__caption").textContent =
-    cardElement.querySelector(".card__title").textContent;
-  cardPopup.querySelector(".popup__image").src =
-    cardElement.querySelector(".card__image").src;
-  cardPopup.alt = cardElement.alt;
-  openModal(cardPopup);
-};
-
-export { createCard, removeCard, likeCard, openCard };
+export { createCard, removeCard, likeCard};

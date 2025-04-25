@@ -7,26 +7,28 @@ export const getCardsRequest = () => {
   return fetch(`${config.baseUrl}/cards`, {
     method: "GET",
     headers: {
-      authorization: config.token,
+      authorization: config.token
     },
   }).then((res) => {
     if (res.ok) {
       return res.json();
+    } else {
+      throw new Error(`Failed to fetch cards: ${res.status}`);
     }
-    return Promise.reject(`getCardsRequest failed: ${res.status}`);
   });
 };
 
 export const getProfileRequest = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: {
-      authorization: config.token,
+      authorization: config.token
     },
   }).then((res) => {
     if (res.ok) {
       return res.json();
+    } else {
+      throw new Error(`Failed to fetch profile: ${res.status}`);
     }
-    return Promise.reject(`getProfileRequest failed: ${res.status}`);
   });
 };
 
@@ -46,10 +48,9 @@ export const updateProfile = (profile) => {
       if (res.ok) {
         return res.json();
       } else {
-        return Promise.reject(`Error: ${res.status}`);
+        throw new Error(`Failed to update profile: ${res.status}`);
       }
-    })
-    .catch((err) => console.log("Update unsuccessful: ", err));
+    });
 };
 
 export const setCard = (card) => {
@@ -68,47 +69,40 @@ export const setCard = (card) => {
       if (res.ok) {
         return res.json();
       } else {
-        return Promise.reject(`Error: ${res.status}`);
+        throw new Error(`Failed to add new card: ${res.status}`);
       }
-    })
-    .catch((err) => console.log("Something went wrong: ", err));
+    });
 };
 
 export const deleteCard = (cardId) => {
   return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: "DELETE",
     headers: {
-      authorization: config.token,
+      authorization: config.token
     },
   })
     .then((res) => {
       if (res.ok) {
         return res.json();
       } else {
-        return Promise.reject(`Error: ${res.status}`);
+        throw new Error(`Failed to delete the card: ${res.status}`);
       }
     })
-    .catch((err) => {
-      console.log("Something went wrong: ", err);
-    });
 };
 
 export const incrementLikes = (cardId) => {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "PUT",
     headers: {
-      authorization: config.token,
+      authorization: config.token
     },
   })
     .then((res) => {
       if (res.ok) {
         return res.json();
       } else {
-        return Promise.reject(`Error: ${res.status}`);
+        throw new Error(`Failed to increment likes: ${res.status}`);
       }
-    })
-    .catch((err) => {
-      console.log("Something went wrong: ", err);
     });
 };
 
@@ -116,18 +110,15 @@ export const decrementLikes = (cardId) => {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "DELETE",
     headers: {
-      authorization: config.token,
+      authorization: config.token
     },
   })
     .then((res) => {
       if (res.ok) {
         return res.json();
       } else {
-        return Promise.reject(`Error: ${res.status}`);
+        throw new Error(`Failed to decrement likes: ${res.status}`);
       }
-    })
-    .catch((err) => {
-      console.log("Something went wrong: ", err);
     });
 };
 
@@ -146,10 +137,7 @@ export const changeAvatar = (imageUrl) => {
       if (res.ok) {
         return res.json();
       } else {
-        Promise.reject();
+        throw new Error(`Failed to change avatar: ${res.status}`);
       }
-    })
-    .catch((err) => {
-      console.log("Something went wrong: ", err);
     });
 };

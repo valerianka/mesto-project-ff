@@ -127,26 +127,28 @@ const handleEditProfileSubmitEvent = (evt) => {
     editFormNameField.value.length > 0 &&
     editFormDescriptionField.value.length > 0
   ) {
-    profileTitleField.textContent = editFormNameField.value;
-    profileDescriptionField.textContent = editFormDescriptionField.value;
     editFormButton.textContent = "Сохранение...";
     updateProfile({
       name: editFormNameField.value,
       about: editFormDescriptionField.value,
     }).then((result) => {
       if (!result) {
-        Promise.reject("Profile wasn't edited successfully");
+        throw new Error("Server response is empty");
       }
       profileTitleField.textContent = result.name;
       profileDescriptionField.textContent = result.about;
+      evt.target.reset();
+      modal.closeModal(editModal);
+    })
+    .catch((err) => {
+      console.log("Error editing profile: ", err);
+    })
+    .finally(() => {
+      editFormButton.textContent = "Сохранить"; 
     });
-    editFormButton.textContent = "Сохранить";
-    evt.target.reset();
   } else {
     console.log("The required fields are not filled");
-    return;
   }
-  modal.closeModal(editModal);
 };
 
 const handleAddCardSubmitEvent = (evt) => {
@@ -165,21 +167,23 @@ const handleAddCardSubmitEvent = (evt) => {
     link: addCardFormUrlField.value,
   }).then((result) => {
     if (!result) {
-      Promise.reject("Card wasn't added successfully");
+      console.log("Server response is empty");
     }
-    const cardElem = { name: result.name, link: result.link };
     const newCardElem = card.createCard(
-      cardElem,
+      result,
       card.removeCard,
       card.likeCard,
       openCard,
       userId,
     );
     cardsList.prepend(newCardElem);
-  });
-  addCardFormButton.textContent = "Сохранить";
-  evt.target.reset();
-  modal.closeModal(addCardModal);
+    evt.target.reset();
+    modal.closeModal(addCardModal);
+  }).catch(err =>
+    console.log("Error adding new card: ", err)
+  ).finally(err => {
+    addCardFormButton.textContent = "Сохранить";
+  })
 };
 
 const handleEditProfileImageSubmitEvent = (evt) => {
@@ -196,14 +200,17 @@ const handleEditProfileImageSubmitEvent = (evt) => {
   changeAvatar(editProfileImageUrlField.value)
     .then((result) => {
       if (!result) {
-        Promise.reject("Change avatar was not successful");
+        throw new Error("Server response is empty");
       }
       profileImage.style = `background-image: url(${result.avatar})`;
+      editProfileImageForm.reset();
+      modal.closeModal(editProfileImageModal);
+    })
+    .catch((err) => {
+      console.log("Error changing avatar: ", err)})
+    .finally(() => {
       editProfileImageButton.textContent = "Сохранить";
     })
-    .catch((err) => console.log(err));
-  editProfileImageForm.reset();
-  modal.closeModal(editProfileImageModal);
 };
 
 const openCard = function (cardElement) {
@@ -211,13 +218,14 @@ const openCard = function (cardElement) {
     console.log("The card doesn't exist");
     return;
   }
+  const cardElementImage = cardElement.querySelector(".card__image"); 
   if (!viewCardTitle || !viewCardImage || !viewCard) {
     console.log("The view card html element(s) wasn't(weren't) found");
   } else {
     viewCardTitle.textContent =
       cardElement.querySelector(".card__title").textContent;
-    viewCardImage.src = cardElement.querySelector(".card__image").src;
-    viewCard.alt = cardElement.alt;
+    viewCardImage.src = cardElementImage.src;
+    viewCardImage.alt = cardElementImage.alt;
     modal.openModal(viewCard);
   }
 };
@@ -274,7 +282,7 @@ Promise.all([getProfileRequest(), getCardsRequest()])
       showProfile(profile);
       showCards(cards, userId);
     } else {
-      Promise.reject("Bad response from the server");
+      throw new Error("Failed to fetch data from the server");
     }
   })
   .catch((error) => {
