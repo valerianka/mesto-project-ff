@@ -10,6 +10,8 @@
 
 @import url(./__input/popup__input.css);
 
+@import url(./__input/popup__input_type_error.css);
+
 @import url(./__button/popup__button.css);
 
 @import url(./__caption/popup__caption.css);
