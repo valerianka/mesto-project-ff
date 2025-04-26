@@ -7,7 +7,6 @@ import {
   getProfileRequest,
   updateProfile,
   setCard,
-  deleteCard,
   changeAvatar,
 } from "./api.js";
 
@@ -68,40 +67,20 @@ const viewCardImage = viewCard.querySelector(".popup__image");
 
 const cardsList = content.querySelector(".places__list");
 
-if (
-  !editButton ||
-  !editModal ||
-  !editFormNameField ||
-  !profileTitleField ||
-  !editFormDescriptionField ||
-  !profileDescriptionField ||
-  !editForm
-) {
-  console.log("The edit profile html element(s) wasn't(weren't) found");
-} else {
-  editButton.addEventListener("click", (evt) => {
-    editFormNameField.value = profileTitleField.textContent;
-    editFormDescriptionField.value = profileDescriptionField.textContent;
-    clearValidation(editForm, validationConfig);
-    modal.openModal(editModal);
-  });
-}
-if (!addButton || !addCardForm || !addCardModal) {
-  console.log("The add card html element(s) wasn't(weren't) found");
-} else {
-  addButton.addEventListener("click", (evt) => {
-    clearValidation(addCardForm, validationConfig);
-    modal.openModal(addCardModal);
-  });
-}
-if (!profileImage || !editProfileImageModal) {
-  console.log("The edit profile image html element(s) wasn't(weren't) found");
-} else {
-  profileImage.addEventListener("click", (evt) => {
-    clearValidation(editProfileImageForm, validationConfig);
-    modal.openModal(editProfileImageModal);
-  });
-}
+editButton.addEventListener("click", (evt) => {
+  editFormNameField.value = profileTitleField.textContent;
+  editFormDescriptionField.value = profileDescriptionField.textContent;
+  clearValidation(editForm, validationConfig);
+  modal.openModal(editModal);
+});
+addButton.addEventListener("click", (evt) => {
+  clearValidation(addCardForm, validationConfig);
+  modal.openModal(addCardModal);
+});
+profileImage.addEventListener("click", (evt) => {
+  clearValidation(editProfileImageForm, validationConfig);
+  modal.openModal(editProfileImageModal);
+});
 
 const addPopupEventListeners = (popup) => {
   if (!popup) {
@@ -109,66 +88,41 @@ const addPopupEventListeners = (popup) => {
     return;
   }
   const closeBtn = popup.querySelector(".popup__close");
-  if (!closeBtn) {
-    console.log("The closeBtn wasn't found");
-  } else {
-    closeBtn.addEventListener("click", (evt) => {
-      modal.closeModal(popup);
-    });
-    popup.addEventListener("click", (evt) => {
-      modal.handleOverlayClickEvent(evt, popup);
-    })
-  }
+  closeBtn.addEventListener("click", (evt) => {
+    modal.closeModal(popup);
+  });
+  popup.addEventListener("click", (evt) => {
+    modal.handleOverlayClickEvent(evt, popup);
+  })
 };
 
 const handleEditProfileSubmitEvent = (evt) => {
   evt.preventDefault();
-  if (
-    editFormNameField.value.length > 0 &&
-    editFormDescriptionField.value.length > 0
-  ) {
-    editFormButton.textContent = "Сохранение...";
-    updateProfile({
-      name: editFormNameField.value,
-      about: editFormDescriptionField.value,
-    }).then((result) => {
-      if (!result) {
-        throw new Error("Server response is empty");
-      }
-      profileTitleField.textContent = result.name;
-      profileDescriptionField.textContent = result.about;
-      evt.target.reset();
-      modal.closeModal(editModal);
-    })
-    .catch((err) => {
-      console.log("Error editing profile: ", err);
-    })
-    .finally(() => {
-      editFormButton.textContent = "Сохранить"; 
-    });
-  } else {
-    console.log("The required fields are not filled");
-  }
+  editFormButton.textContent = "Сохранение...";
+  updateProfile({
+    name: editFormNameField.value,
+    about: editFormDescriptionField.value,
+  }).then((result) => {
+    profileTitleField.textContent = result.name;
+    profileDescriptionField.textContent = result.about;
+    evt.target.reset();
+    modal.closeModal(editModal);
+  })
+  .catch((err) => {
+    console.log("Error editing profile: ", err);
+  })
+  .finally(() => {
+    editFormButton.textContent = "Сохранить"; 
+  });
 };
 
 const handleAddCardSubmitEvent = (evt) => {
   evt.preventDefault();
-  if (!addCardFormNameField || !addCardFormUrlField || !addCardFormButton) {
-    console.log("The add card html elemnt(s) wasn't(weren't) found");
-    return;
-  }
-  if (!addCardFormNameField.value || !addCardFormUrlField.value) {
-    console.log("The required fields are not filled");
-    return;
-  }
   addCardFormButton.textContent = "Сохранение...";
   setCard({
     name: addCardFormNameField.value,
     link: addCardFormUrlField.value,
   }).then((result) => {
-    if (!result) {
-      console.log("Server response is empty");
-    }
     const newCardElem = card.createCard(
       result,
       card.removeCard,
@@ -188,20 +142,9 @@ const handleAddCardSubmitEvent = (evt) => {
 
 const handleEditProfileImageSubmitEvent = (evt) => {
   evt.preventDefault();
-  if (!editProfileImageUrlField || !editProfileImageButton) {
-    console.log("The edit profile image html elemnt(s) wasn't(weren't) found");
-    return;
-  }
-  if (!editProfileImageUrlField.value) {
-    console.log("The required fields are not filled");
-    return;
-  }
   editProfileImageButton.textContent = "Сохранение...";
   changeAvatar(editProfileImageUrlField.value)
     .then((result) => {
-      if (!result) {
-        throw new Error("Server response is empty");
-      }
       profileImage.style = `background-image: url(${result.avatar})`;
       editProfileImageForm.reset();
       modal.closeModal(editProfileImageModal);
@@ -213,21 +156,15 @@ const handleEditProfileImageSubmitEvent = (evt) => {
     })
 };
 
-const openCard = function (cardElement) {
-  if (!cardElement) {
+const openCard = function (card) {
+  if (!card) {
     console.log("The card doesn't exist");
     return;
   }
-  const cardElementImage = cardElement.querySelector(".card__image"); 
-  if (!viewCardTitle || !viewCardImage || !viewCard) {
-    console.log("The view card html element(s) wasn't(weren't) found");
-  } else {
-    viewCardTitle.textContent =
-      cardElement.querySelector(".card__title").textContent;
-    viewCardImage.src = cardElementImage.src;
-    viewCardImage.alt = cardElementImage.alt;
-    modal.openModal(viewCard);
-  }
+  viewCardTitle.textContent = card.title;
+  viewCardImage.src = card.link;
+  viewCardImage.alt = "Изображение";
+  modal.openModal(viewCard);
 };
 
 const showCards = function (cards, profile_id) {
@@ -277,13 +214,9 @@ editProfileImageForm.addEventListener(
 
 Promise.all([getProfileRequest(), getCardsRequest()])
   .then(([profile, cards]) => {
-    if (profile && cards) {
-      userId = profile._id;
-      showProfile(profile);
-      showCards(cards, userId);
-    } else {
-      throw new Error("Failed to fetch data from the server");
-    }
+    userId = profile._id;
+    showProfile(profile);
+    showCards(cards, userId);
   })
   .catch((error) => {
     console.log("Something went wrong:", error);

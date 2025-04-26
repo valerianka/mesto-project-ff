@@ -12,11 +12,15 @@ const likeCard = function (cardElement, cardId) {
     decrementLikes(cardId).then((result) => {
       cardLikesCountField.textContent =
         result.likes.length > 0 ? result.likes.length : "";
+    }).catch(err => {
+      console.log("Error deleting a like: ", err);
     });
   } else {
     incrementLikes(cardId).then(
-      (result) => (cardLikesCountField.textContent = result.likes.length),
-    );
+      (result) => (cardLikesCountField.textContent = result.likes.length)
+    ).catch(err => {
+      console.log("Error adding a like: ", err);
+    });
   }
   cardElement
     .querySelector(".card__like-button")
@@ -29,7 +33,7 @@ function createCard(card, removeCard, likeCard, openCard, userId) {
     .cloneNode(true);
   newCardElement.querySelector(".card__image").src = card.link;
   newCardElement.querySelector(".card__title").textContent = card.name;
-  newCardElement.querySelector(".card__image").alt = "Фотография города";
+  newCardElement.querySelector(".card__image").alt = "Изображение";
   if (removeCard) {
     newCardElement
       .querySelector(".card__delete-button")
@@ -59,7 +63,7 @@ function createCard(card, removeCard, likeCard, openCard, userId) {
       likeCard(newCardElement, card._id);
     });
   newCardElement.addEventListener("click", (evt) => {
-    openCard(newCardElement);
+    openCard(card);
   });
   return newCardElement;
 }
@@ -68,8 +72,6 @@ const removeCard = function (cardElement, cardId) {
   deleteCard(cardId).then(result => {
     if (result) {
       cardElement.remove();
-    } else {
-      throw new Error("Error deleting the card");
     }
   })
   .catch(err => {
