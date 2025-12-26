@@ -1,5 +1,16 @@
-# Проектная работа Mesto
+# Mesto Project
 
-https://github.com/valerianka/mesto-project-ff/
+## Project Overview
+This is an interactive frontend project created to practice core JavaScript and web layout skills. The application lets users view and interact with cards representing places (e.g., adding new cards, liking and removing them), along with basic profile information.
 
-Deployed at GHPages: https://valerianka.github.io/mesto-project-ff/
+## Tech Stack
+JavaScript, HTML, CSS, Webpack
+
+## What I Worked On
+- DOM manipulation and event handling
+- Building responsive UI layout
+- Interactive user interface (add/remove cards, likes)
+- Form validation and general page behavior
+
+## Status
+This project was built as part of frontend learning and demonstrates fundamental skills in working with dynamic UI using vanilla JavaScript. It is not actively maintained.
